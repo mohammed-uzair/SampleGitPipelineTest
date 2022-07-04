@@ -1,0 +1,62 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+
+    lane :increment_git_tag do |options|
+      app_name = options[:app_name]
+      tag_type = options[:tag_type]
+      version_name = options[:version_name]
+      build_number = options[:build_number]
+
+      if app_name.nil?
+        UI.user_error!("'app_name' missing")
+      end
+
+      if tag_type.nil?
+        UI.user_error!("'tag_type' missing")
+      end
+
+      if version_name.nil?
+        UI.user_error!("'version_name' missing")
+      end
+
+      if build_number.nil?
+        UI.user_error!("'build_number' missing")
+      end
+
+      tag = app_name.downcase + "/" + version_name + "-" + tag_type + "." + build_number.to_s
+      add_git_tag(tag: tag)
+    end
+
+
+    lane :changelog do |options|
+      tag = options[:tag]
+
+      if tag.nil?
+        UI.user_error!("'tag' missing")
+      end
+
+      changelog_from_git_commits(
+        between: [tag, "HEAD"],
+        pretty: "%an %ad%n%s%n%n", #author name, author date, PR title
+        date_format: "iso", #  shows timestamps in ISO 8601 format
+        merge_commit_filtering: "exclude_merges" # Optional, lets you filter out merge commits
+        )
+    end
+
+end

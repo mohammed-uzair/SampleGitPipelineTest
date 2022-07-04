@@ -1,0 +1,97 @@
+{
+  "project_info": {
+    "project_number": "848111109680",
+    "project_id": "oviva-direkt-af2a3",
+    "storage_bucket": "oviva-direkt-af2a3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848111109680:android:c682380f9bfb04362ecff5",
+        "android_client_info": {
+          "package_name": "com.uzair.samplegitpipelinetest.diga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848111109680-fpq9jedu046h4o2k3u2mkljona1opiv7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6qKyGQwJEYmg79uki0aU3AwrGzCJkFpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848111109680-fpq9jedu046h4o2k3u2mkljona1opiv7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848111109680:android:d6e0b18d33760a8a2ecff5",
+        "android_client_info": {
+          "package_name": "com.uzair.samplegitpipelinetest.diga.it"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848111109680-fpq9jedu046h4o2k3u2mkljona1opiv7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6qKyGQwJEYmg79uki0aU3AwrGzCJkFpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848111109680-fpq9jedu046h4o2k3u2mkljona1opiv7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848111109680:android:6d9e6a3aa5c941522ecff5",
+        "android_client_info": {
+          "package_name": "com.uzair.samplegitpipelinetest.diga.pta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848111109680-fpq9jedu046h4o2k3u2mkljona1opiv7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6qKyGQwJEYmg79uki0aU3AwrGzCJkFpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848111109680-fpq9jedu046h4o2k3u2mkljona1opiv7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

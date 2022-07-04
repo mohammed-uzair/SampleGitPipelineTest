@@ -1,0 +1,130 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.appdistribution'
+}
+
+android {
+    compileSdk 31
+
+    //Dummy dimension in order to make it works
+    flavorDimensions "app"
+
+    defaultConfig {
+        applicationId "com.uzair.samplegitpipelinetest"
+        minSdk 23
+        targetSdk 31
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        if(project.hasProperty('versionCode')){
+            versionCode = project.versionCode as int
+        }
+
+        productFlavors {
+            oviva {
+                dimension "app"
+
+                versionName "v4.14.0"
+                versionCode 119
+
+                if(project.hasProperty('versionCode')){
+                    versionCode = project.versionCode as int
+                }
+
+                firebaseAppDistribution {
+                    groups="internal"
+                    if (project.hasProperty('changeLog')) {
+                        releaseNotes = project.changeLog
+                    }
+                }
+            }
+
+            odiga {
+                dimension "app"
+
+                applicationIdSuffix ".diga"
+
+                versionName "v1.9.0"
+                versionCode 12
+
+                if(project.hasProperty('versionCode')){
+                    versionCode = project.versionCode as int
+                }
+
+                firebaseAppDistribution {
+                    groups="internal"
+                    if (project.hasProperty('changeLog')) {
+                        releaseNotes = project.changeLog
+                    }
+                }
+            }
+        }
+    }
+
+    variantFilter { variant ->
+        if (variant.buildType.name.contains("release")
+                || variant.buildType.name.contains("debug")) {
+            variant.setIgnore(true)
+        }
+    }
+
+    buildTypes {
+        PROD.initWith(buildTypes.release)
+        PROD {
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+        }
+
+        IT.initWith(buildTypes.debug)
+        IT {
+            applicationIdSuffix ".it"
+            matchingFallbacks = ['debug']
+        }
+
+        PTA.initWith(buildTypes.debug)
+        PTA {
+            applicationIdSuffix ".pta"
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            matchingFallbacks = ['debug']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
+
+    implementation platform('com.google.firebase:firebase-bom:30.0.1')
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+
+task getVersionName {
+    doLast {
+        android.productFlavors.all {
+            flavor ->
+                if (flavour.matches(flavor.name)) {
+                    print flavor.versionName
+                }
+        }
+    }
+}

@@ -1,0 +1,85 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'main'
+      - 'release/**'
+  workflow_dispatch:
+
+jobs:
+  build-apk-it:
+    name: Build and deploy App
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_JKS_PASS: ${{ secrets.ANDROID_JKS_PASS }}
+      ANDROID_JKS_BASE64: ${{ secrets.ANDROID_JKS_BASE64 }}
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: True
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Remove NDK
+        run: |
+          # This is only needed as the android build tools complain when there is a too recent NDK available
+          # However, it does not complain if there is no NDK available at all
+          # This should be fixed once com.android.tools.build:gradle 4.1 is released
+          sudo rm -rf $ANDROID_HOME/ndk-bundle
+
+      - name: Setup env variables
+        shell: bash
+        run: |
+          echo "change_log_script=$(echo ${{ github.ref_name }} | sed 's/\//-/g')-changes.sh" >> $GITHUB_ENV
+          echo "change_log_cache_key=$(echo ${{ github.ref_name }} | sed 's/\//-/g')" >> $GITHUB_ENV
+          echo "current_commit=$GITHUB_SHA" >> $GITHUB_ENV
+
+      - name: Restore change log from cache
+        uses: actions/cache@v3
+        with:
+          path: "${{ env.change_log_script }}"
+          key: "${{ env.change_log_cache_key }}"
+
+      - name: Collect change logs
+        shell: bash
+        run: if [ -e "${{ env.change_log_script }}" ]; then sh "${{ env.change_log_script }}"; else echo "" > release_notes.txt; fi
+
+      - name: Print changes
+        shell: bash
+        run: cat release_notes.txt
+
+      - name: Update changelog script
+        if: ${{ success() }}
+        run: echo "git log --pretty=format:%s ${{ env.current_commit }}..HEAD > release_notes.txt" > "${{ env.change_log_script }}"
+
+      - name: Upload ODiGA IT to firebase
+        if: github.ref == 'refs/heads/master'
+        run: ./gradlew -PversionCode=$((1000 + $GITHUB_RUN_NUMBER)) -PchangeLog="$(cat release_notes.txt)" assembleOdigaIT appDistributionUploadOdigaIT
+
+      - name: Upload ODiGA PTA & PROD to firebase
+        if: startsWith(github.ref, 'refs/heads/release')
+        run: ./gradlew -PversionCode=$((1000 + $GITHUB_RUN_NUMBER)) -PchangeLog="$(cat release_notes.txt)" assembleOdigaPROD appDistributionUploadOdigaPROD
+
+      - name: Remove change log cache
+        if: ${{ success() }}
+        shell: bash
+        run: |
+          curl -X DELETE -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/mohammed-uzair/SampleGitPipelineTest/actions/caches?key=${{ env.change_log_cache_key }}"
+
+      - name: Create change log cache
+        if: ${{ success() }}
+        uses: actions/cache@v3
+        with:
+          key: "${{ env.change_log_cache_key }}"
+          path: "${{ env.change_log_script }}"
+  
